@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍪 Juni's House - Multi-Item Order Form</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(135deg,#f6e3c5,#fff7ea);min-height:100vh;padding:20px;color:#5a2f00;}
+.container{max-width:800px;margin:0 auto;}
+.card{background:#fff;padding:25px;border-radius:20px;box-shadow:0 15px 40px rgba(0,0,0,0.15);margin-bottom:20px;}
+h1{text-align:center;color:#7b3f00;margin-bottom:10px;font-size:2.2rem;display:flex;align-items:center;justify-content:center;gap:10px;}
+.subtitle{text-align:center;color:#9b6b3d;margin-bottom:25px;font-size:1.1rem;}
+.customer-info{margin-bottom:30px;}
+.form-group{margin-bottom:20px;}
+label{display:block;margin-bottom:8px;font-weight:600;color:#5a2f00;font-size:15px;}
+.input-icon{position:relative;}
+.input-icon i{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#7b3f00;}
+input, select, textarea{width:100%;padding:14px 14px 14px 45px;border-radius:12px;border:2px solid #eee;font-size:15px;transition:all 0.3s;background-color:#fcf9f3;}
+input:focus, select:focus, textarea:focus{outline:none;border-color:#7b3f00;background-color:#fff;box-shadow:0 0 0 3px rgba(123,63,0,0.1);}
+.products-section{margin-bottom:30px;}
+.section-title{font-size:1.4rem;color:#7b3f00;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #ffe8cc;display:flex;align-items:center;justify-content:space-between;}
+.add-product-btn{background:#7b3f00;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:bold;display:flex;align-items:center;gap:8px;transition:all 0.3s;}
+.add-product-btn:hover{background:#9b4f00;transform:translateY(-2px);}
+.product-item{background:#fcf9f3;border-radius:12px;padding:20px;margin-bottom:15px;border:2px solid #ffe8cc;transition:all 0.3s;}
+.product-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.product-title{font-weight:bold;color:#7b3f00;font-size:1.1rem;}
+.remove-product{background:#ff6b6b;color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.product-details{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+@media(max-width:600px){.product-details{grid-template-columns:1fr;}}
+.price-display{font-weight:bold;color:#7b3f00;font-size:1.1rem;margin-top:10px;text-align:right;}
+.summary{background:linear-gradient(135deg,#fff3e0,#ffe8cc);border-radius:12px;padding:20px;margin-top:20px;border:2px dashed #ffb347;}
+.summary-row{display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(123,63,0,0.1);}
+.total-row{font-size:1.5rem;font-weight:bold;color:#7b3f00;margin-top:10px;padding-top:10px;border-top:2px solid #ffb347;}
+.submit-btn{width:100%;padding:18px;border:none;border-radius:12px;background:linear-gradient(135deg,#7b3f00,#9b4f00);color:white;font-size:1.2rem;font-weight:bold;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:25px;}
+.submit-btn:hover{background:linear-gradient(135deg,#9b4f00,#7b3f00);transform:translateY(-3px);box-shadow:0 10px 25px rgba(123,63,0,0.3);}
+.submit-btn:active{transform:translateY(0);}
+textarea{min-height:100px;resize:vertical;padding-left:15px !important;}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<h1><span class="logo">🍪</span> Juni's House</h1>
+<p class="subtitle">Order multiple items in one go! Add as many products as you want.</p>
+
+<form id="orderForm" action="https://n8n-zkg0cs0osgcs4skgswsoc4ow.195.35.29.54.sslip.io/webhook/Order" method="POST">
+
+<div class="customer-info">
+<h2 class="section-title"><i class="fas fa-user-circle"></i> Customer Information</h2>
+<div class="form-group">
+<label for="name">Full Name</label>
+<div class="input-icon">
+<i class="fas fa-user"></i>
+<input type="text" id="name" name="customerName" required placeholder="Enter your full name">
+</div>
+</div>
+
+<div class="form-group">
+<label for="phone">Phone Number</label>
+<div class="input-icon">
+<i class="fas fa-phone"></i>
+<input type="tel" id="phone" name="customerPhone" required placeholder="05xxxxxxxx">
+</div>
+</div>
+
+<div class="form-group">
+<label for="address">Delivery Address (Optional)</label>
+<div class="input-icon">
+<i class="fas fa-map-marker-alt"></i>
+<input type="text" id="address" name="deliveryAddress" placeholder="Enter delivery address">
+</div>
+</div>
+</div>
+
+<div class="products-section">
+<h2 class="section-title">
+<i class="fas fa-shopping-cart"></i> Order Items
+<button type="button" class="add-product-btn" id="addProduct"><i class="fas fa-plus"></i> Add Item</button>
+</h2>
+
+<div id="productsContainer">
+<div class="product-item" data-index="0">
+<div class="product-header">
+<div class="product-title">Item #1</div>
+<button type="button" class="remove-product" onclick="removeProduct(this)" disabled><i class="fas fa-times"></i></button>
+</div>
+<div class="product-details">
+<div class="form-group">
+<label>Select Product</label>
+<select class="product-select" name="products[0][item]" onchange="updateProductPrice(this)">
+<option value="Juni's Signature" data-price="12">Juni's Signature - 12 SAR</option>
+<option value="Velvet Crush" data-price="13">Velvet Crush - 13 SAR</option>
+<option value="Matcha Cloud" data-price="15">Matcha Cloud - 15 SAR</option>
+<option value="PB Eclipse" data-price="16">PB Eclipse - 16 SAR</option>
+<option value="Box of 4" data-price="45">Box of 4 - 45 SAR</option>
+<option value="Box of 6" data-price="65">Box of 6 - 65 SAR</option>
+<option value="Box of 12" data-price="125">Box of 12 - 125 SAR</option>
+<option value="Double Velvet Heart" data-price="16">Double Velvet Heart - 16 SAR</option>
+<option value="Double Fudge Brownie" data-price="15">Double Fudge Brownie - 15 SAR</option>
+</select>
+</div>
+<div class="form-group">
+<label>Quantity</label>
+<input type="number" class="product-qty" name="products[0][quantity]" value="1" min="1" max="99" onchange="updateProductPrice(this)">
+</div>
+</div>
+<div class="price-display">
+Price: <span class="product-total">12</span> SAR
+</div>
+</div>
+</div>
+
+<div class="notes-section">
+<h2 class="section-title"><i class="fas fa-sticky-note"></i> Special Instructions</h2>
+<div class="form-group">
+<textarea id="notes" name="orderNotes" placeholder="Any allergies? Delivery instructions? Special requests? Packaging preferences?"></textarea>
+</div>
+</div>
+
+<div class="summary">
+<h2 class="section-title"><i class="fas fa-receipt"></i> Order Summary</h2>
+<div id="orderSummary"></div>
+<div class="summary-row total-row">
+<span>Total Amount:</span>
+<span id="grandTotal">12</span> SAR
+</div>
+</div>
+
+<input type="hidden" id="totalAmount" name="totalAmount" value="12">
+<input type="hidden" id="itemCount" name="itemCount" value="1">
+
+<button type="submit" class="submit-btn pulse"><i class="fas fa-paper-plane"></i> Place Order Now</button>
+
+<p style="text-align:center;margin-top:15px;color:#888;font-size:0.9rem;">
+<i class="fas fa-info-circle"></i> You'll receive an order confirmation shortly.
+</p>
+</form>
+</div>
+</div>
+
+<script>
+let productCount = 1;
+
+document.getElementById('addProduct').addEventListener('click', function(){
+    const container = document.getElementById('productsContainer');
+    const newIndex = productCount;
+    const productHTML = `
+<div class="product-item" data-index="${newIndex}">
+<div class="product-header">
+<div class="product-title">Item #${newIndex+1}</div>
+<button type="button" class="remove-product" onclick="removeProduct(this)"><i class="fas fa-times"></i></button>
+</div>
+<div class="product-details">
+<div class="form-group">
+<label>Select Product</label>
+<select class="product-select" name="products[${newIndex}][item]" onchange="updateProductPrice(this)">
+<option value="Juni's Signature" data-price="12">Juni's Signature - 12 SAR</option>
+<option value="Velvet Crush" data-price="13">Velvet Crush - 13 SAR</option>
+<option value="Matcha Cloud" data-price="15">Matcha Cloud - 15 SAR</option>
+<option value="PB Eclipse" data-price="16">PB Eclipse - 16 SAR</option>
+<option value="Box of 4" data-price="45">Box of 4 - 45 SAR</option>
+<option value="Box of 6" data-price="65">Box of 6 - 65 SAR</option>
+<option value="Box of 12" data-price="125">Box of 12 - 125 SAR</option>
+<option value="Double Velvet Heart" data-price="16">Double Velvet Heart - 16 SAR</option>
+<option value="Double Fudge Brownie" data-price="15">Double Fudge Brownie - 15 SAR</option>
+</select>
+</div>
+<div class="form-group">
+<label>Quantity</label>
+<input type="number" class="product-qty" name="products[${newIndex}][quantity]" value="1" min="1" max="99" onchange="updateProductPrice(this)">
+</div>
+</div>
+<div class="price-display">
+Price: <span class="product-total">12</span> SAR
+</div>
+</div>`;
+container.insertAdjacentHTML('beforeend', productHTML);
+productCount++;
+updateOrderSummary();
+});
+
+function removeProduct(button){
+    const productItem = button.closest('.product-item');
+    productItem.remove();
+    updateOrderSummary();
+    updateProductNumbers();
+}
+
+function updateProductNumbers(){
+    const productItems = document.querySelectorAll('.product-item');
+    productItems.forEach((item,index)=>{
+        item.querySelector('.product-title').textContent = `Item #${index+1}`;
+        const select = item.querySelector('.product-select');
+        const qtyInput = item.querySelector('.product-qty');
+        select.name = `products[${index}][item]`;
+        qtyInput.name = `products[${index}][quantity]`;
+        item.dataset.index = index;
+    });
+    productCount = productItems.length;
+}
+
+function updateProductPrice(element){
+    const productItem = element.closest('.product-item');
+    const select = productItem.querySelector('.product-select');
+    const qtyInput = productItem.querySelector('.product-qty');
+    const priceDisplay = productItem.querySelector('.product-total');
+
+    const price = parseInt(select.options[select.selectedIndex].dataset.price);
+    const qty = parseInt(qtyInput.value || 1);
+    priceDisplay.textContent = price * qty;
+
+    updateOrderSummary();
+}
+
+function updateOrderSummary(){
+    const productItems = document.querySelectorAll('.product-item');
+    let subtotal = 0;
+    let itemCount = 0;
+    const summaryHTML = [];
+
+    productItems.forEach((item)=>{
+        const select = item.querySelector('.product-select');
+        const qtyInput = item.querySelector('.product-qty');
+        const price = parseInt(select.options[select.selectedIndex].dataset.price);
+        const qty = parseInt(qtyInput.value || 1);
+        const total = price * qty;
+        subtotal += total;
+        itemCount += qty;
+
+        summaryHTML.push(`<div class="summary-row">
+<span>${select.value} (x${qty}):</span>
+<span>${total} SAR</span>
+</div>`);
+    });
+
+    const summaryContainer = document.getElementById('orderSummary');
+    summaryContainer.innerHTML = summaryHTML.join('');
+    document.getElementById('grandTotal').textContent = subtotal;
+    document.getElementById('totalAmount').value = subtotal;
+    document.getElementById('itemCount').value = itemCount;
+}
+
+document.getElementById('orderForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const productItems = document.querySelectorAll('.product-item');
+
+    if(!name||!phone){alert('Please fill in your name and phone number'); return false;}
+    if(productItems.length===0){alert('Please add at least one item to your order'); return false;}
+
+    const total = document.getElementById('grandTotal').textContent;
+    const itemCount = productItems.length;
+
+    if(confirm(`Confirm order for ${total} SAR with ${itemCount} item${itemCount>1?'s':''}?`)){
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
+        submitBtn.disabled = true;
+        setTimeout(()=>{this.submit();},1000);
+    }
+});
+
+document.addEventListener('DOMContentLoaded',()=>{updateOrderSummary();});
+</script>
+</body>
+</html>
